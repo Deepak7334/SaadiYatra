@@ -1,0 +1,30 @@
+{
+  "name": "@shaadiyatra/backend",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev src/index.ts --port 8787",
+    "dev:node": "tsx watch src/nodeServer.ts",
+    "build": "wrangler deploy --dry-run --outdir dist",
+    "deploy": "wrangler deploy",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "wrangler d1 migrations apply shaadiyatra-db --local",
+    "db:seed": "tsx src/db/seed.ts"
+  },
+  "dependencies": {
+    "hono": "^4.6.14",
+    "drizzle-orm": "^0.38.3",
+    "zod": "^3.23.8",
+    "@shaadiyatra/shared": "*"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241230.0",
+    "@hono/node-server": "^1.13.7",
+    "@types/node": "^22.10.2",
+    "drizzle-kit": "^0.30.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "wrangler": "^3.99.0"
+  }
+}

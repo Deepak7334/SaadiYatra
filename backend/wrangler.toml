@@ -1,0 +1,21 @@
+name = "shaadiyatra-backend"
+main = "src/index.ts"
+compatibility_date = "2024-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "shaadiyatra-db"
+database_id = "local-shaadiyatra-db"
+migrations_dir = "drizzle"
+
+[[r2_buckets]]
+binding = "STORAGE"
+bucket_name = "shaadiyatra-uploads"
+
+[vars]
+ENVIRONMENT = "development"
+JWT_SECRET = "shaadiyatra_super_secure_jwt_secret_dev_2026_bihar"
+RAZORPAY_KEY_ID = "rzp_test_shaadiyatra123"
+RAZORPAY_KEY_SECRET = "test_secret_shaadiyatra_secure"
+APP_URL = "http://localhost:5173"
