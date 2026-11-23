@@ -109,7 +109,8 @@ export const Cart: React.FC = () => {
 
       if (res.success && res.booking) {
         clearCart();
-        navigate(`/customer/bookings/${res.booking.id}?new=true`);
+        // Auto-approved: redirect directly to booking detail where Pay Now button is shown
+        navigate(`/customer/bookings/${res.booking.id}?pay=true`);
       } else {
         setError(res.error || 'Failed to submit booking request');
       }
@@ -152,7 +153,7 @@ export const Cart: React.FC = () => {
           Combined Wedding Fleet Cart ({cart.length} Vehicles)
         </h1>
         <p className="mt-2 text-sm text-slate-600">
-          All selected vehicles will be booked together under 1 booking ID with verified individual owner responses.
+          All selected vehicles will be booked together under 1 booking ID. Pay the advance online to instantly confirm your fleet.
         </p>
       </div>
 
@@ -394,7 +395,7 @@ export const Cart: React.FC = () => {
                   ₹{advanceAmount.toLocaleString('en-IN')}
                 </div>
                 <div className="text-[10px] text-slate-500 mt-1 leading-snug">
-                  * Payable online only after Vehicle Owners and Admin approve availability.
+                  * Pay online instantly after submitting your request to confirm vehicles.
                 </div>
               </div>
 
@@ -417,7 +418,7 @@ export const Cart: React.FC = () => {
                   <span className="inline-block animate-spin rounded-full h-4 w-4 border-2 border-navy-900 border-t-transparent" />
                 ) : (
                   <>
-                    <span>Submit Combined Request</span>
+                    <span>Pay Advance & Confirm Fleet</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}

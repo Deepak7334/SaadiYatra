@@ -21,12 +21,12 @@ export const CustomerBookings: React.FC = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'submitted':
+        return <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">Processing…</span>;
       case 'owner_review':
-        return <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">Owner Review Pending</span>;
       case 'admin_review':
-        return <span className="px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800">Admin Review</span>;
+        return <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">Under Review</span>;
       case 'approved_pending_payment':
-        return <span className="px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-800 animate-pulse">Payment Required</span>;
+        return <span className="px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-800 animate-pulse">⚡ Pay Advance to Confirm</span>;
       case 'confirmed':
         return <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" /> Booking Confirmed</span>;
       case 'cancelled':
@@ -55,7 +55,7 @@ export const CustomerBookings: React.FC = () => {
             My Wedding Bookings
           </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Track owner responses, admin approvals, advance payments, and confirmed vehicles.
+            Track your advance payments and confirmed vehicle reservations.
           </p>
         </div>
 
@@ -147,14 +147,14 @@ export const CustomerBookings: React.FC = () => {
                 <div className="text-xs text-slate-500">
                   {booking.status === 'approved_pending_payment' ? (
                     <span className="text-purple-700 font-bold">
-                      ⚡ Action Required: Pay ₹{booking.advanceAmountRequired?.toLocaleString('en-IN')} advance
+                      ⚡ Action Required: Pay ₹{booking.advanceAmountRequired?.toLocaleString('en-IN')} advance to confirm
                     </span>
                   ) : booking.status === 'confirmed' ? (
                     <span className="text-emerald-700 font-bold">
                       ✓ Advance Paid: ₹{booking.advanceAmountPaid?.toLocaleString('en-IN')}
                     </span>
                   ) : (
-                    <span>Awaiting owner & admin reviews</span>
+                    <span>Booking is being processed…</span>
                   )}
                 </div>
 

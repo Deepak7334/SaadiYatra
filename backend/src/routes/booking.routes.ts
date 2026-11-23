@@ -119,7 +119,7 @@ bookingRouter.post('/', authMiddleware, requireRole(['customer', 'admin']), asyn
         pricePerDay: v.perDayPrice,
         daysCount: diffDays,
         totalItemPrice: itemPrice,
-        status: 'pending_owner',
+        status: 'approved_by_admin', // Auto-approved: no manual owner/admin step needed
         snapshotDataJson: JSON.stringify(snapshot),
         createdAt: now,
         updatedAt: now,
@@ -150,7 +150,7 @@ bookingRouter.post('/', authMiddleware, requireRole(['customer', 'admin']), asyn
       advanceAmountRequired,
       advanceAmountPaid: 0,
       balanceAmount: calculatedTotal,
-      status: 'owner_review', // Moves to owner review step
+      status: 'approved_pending_payment', // Auto-approved: customer pays advance immediately
       customerNotes: parsed.data.customerNotes || '',
       createdAt: now,
       updatedAt: now,
@@ -175,33 +175,18 @@ bookingRouter.post('/', authMiddleware, requireRole(['customer', 'admin']), asyn
       });
     }
 
-    // Notify Owners (privacy protected: only their own vehicle)
-    const notifiedOwners = new Set<string>();
-    for (const v of selectedVehicles) {
-      if (!notifiedOwners.has(v.ownerId)) {
-        notifiedOwners.add(v.ownerId);
-        await createNotification(db, {
-          userId: v.ownerId,
-          title: `New Booking Request #${bookingNumber}`,
-          message: `Booking request received for vehicle "${v.name}" on ${eventDate} in ${parsed.data.eventCity}. Please accept or reject.`,
-          type: 'owner_request',
-          metadata: { bookingId, bookingNumber, vehicleId: v.id, date: eventDate },
-        });
-      }
-    }
-
-    // Customer Notification
+    // Customer Notification — vehicles auto-approved, pay advance to confirm
     await createNotification(db, {
       userId: authUser.userId,
-      title: `Booking Request Submitted #${bookingNumber}`,
-      message: `Your booking request for ${selectedVehicles.length} vehicle(s) on ${eventDate} has been sent for owner and admin confirmation.`,
+      title: `Booking Ready for Payment #${bookingNumber}`,
+      message: `Your ${selectedVehicles.length} vehicle(s) are available on ${eventDate}! Pay the advance of ₹${advanceAmountRequired} to confirm your booking.`,
       type: 'booking_update',
       metadata: { bookingId, bookingNumber },
     });
 
     return c.json({
       success: true,
-      message: 'Booking request created successfully.',
+      message: 'Booking created! Please pay the advance amount to confirm your vehicles.',
       booking: {
         id: bookingId,
         bookingNumber,
@@ -209,7 +194,7 @@ bookingRouter.post('/', authMiddleware, requireRole(['customer', 'admin']), asyn
         totalAmount: calculatedTotal,
         advanceAmountRequired,
         itemCount: selectedVehicles.length,
-        status: 'owner_review',
+        status: 'approved_pending_payment',
       },
     }, 201);
   } catch (err: any) {

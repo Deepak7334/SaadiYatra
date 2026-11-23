@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { useParams, Link, useSearchParams } from 'react-router-dom';
 import { api } from '../../lib/api';
 import {
   Calendar,
@@ -16,6 +16,8 @@ import {
 
 export const BookingDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
+  const autoPayTriggered = useRef(false);
 
   const [booking, setBooking] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
@@ -41,6 +43,20 @@ export const BookingDetail: React.FC = () => {
   useEffect(() => {
     fetchBooking();
   }, [id]);
+
+  // Auto-trigger payment modal when redirected from Cart with ?pay=true
+  useEffect(() => {
+    if (
+      booking &&
+      booking.status === 'approved_pending_payment' &&
+      searchParams.get('pay') === 'true' &&
+      !autoPayTriggered.current &&
+      !paymentSuccess
+    ) {
+      autoPayTriggered.current = true;
+      handlePayAdvance();
+    }
+  }, [booking]);
 
   // Razorpay Checkout handler
   const handlePayAdvance = async () => {
@@ -147,11 +163,9 @@ export const BookingDetail: React.FC = () => {
   }
 
   const steps = [
-    { title: 'Submitted', done: true },
-    { title: 'Owner Review', done: booking.status !== 'submitted' },
-    { title: 'Admin Approval', done: ['approved_pending_payment', 'confirmed', 'completed'].includes(booking.status) },
-    { title: 'Advance Paid', done: ['confirmed', 'completed'].includes(booking.status) },
-    { title: 'Confirmed Fleet', done: ['confirmed', 'completed'].includes(booking.status) },
+    { title: 'Booking Created', done: true },
+    { title: 'Pay Advance', done: ['confirmed', 'completed'].includes(booking.status) },
+    { title: 'Fleet Confirmed', done: ['confirmed', 'completed'].includes(booking.status) },
   ];
 
   return (
@@ -233,7 +247,7 @@ export const BookingDetail: React.FC = () => {
         {/* Workflow Progress Stepper */}
         <div>
           <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">Booking Lifecycle</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             {steps.map((s, idx) => (
               <div
                 key={idx}
@@ -259,7 +273,7 @@ export const BookingDetail: React.FC = () => {
         {/* Vehicle Items Table */}
         <div>
           <h3 className="font-serif text-lg font-bold text-navy-900 mb-3">
-            Selected Vehicles & Owner Responses
+            Selected Vehicles
           </h3>
 
           <div className="border border-slate-200 rounded-2xl overflow-hidden divide-y divide-slate-100">
@@ -310,10 +324,10 @@ export const BookingDetail: React.FC = () => {
             <div>
               <div className="flex items-center gap-2 text-purple-900 font-bold text-base">
                 <CreditCard className="w-5 h-5 text-purple-700" />
-                <span>Super Admin Approved! Advance Payment Ready</span>
+                <span>Vehicles Available — Pay Advance to Confirm!</span>
               </div>
               <p className="text-xs text-purple-700 mt-1 max-w-lg">
-                Your wedding vehicles have been reviewed and approved. Please pay the 25% advance of <strong>₹{booking.advanceAmountRequired?.toLocaleString('en-IN')}</strong> to lock the vehicles.
+                Your selected vehicles are ready and reserved for <strong>{booking.eventDate}</strong>. Pay the {booking.advancePercentage}% advance of <strong>₹{booking.advanceAmountRequired?.toLocaleString('en-IN')}</strong> now to lock your fleet. Vehicles will be released if payment is not completed.
               </p>
             </div>
 
