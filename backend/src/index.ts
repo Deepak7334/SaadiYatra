@@ -10,6 +10,7 @@ import { ownerRouter } from './routes/owner.routes';
 import { adminRouter } from './routes/admin.routes';
 import { paymentRouter } from './routes/payment.routes';
 import { notificationRouter } from './routes/notification.routes';
+import { uploadRouter } from './routes/upload.routes';
 
 const app = new Hono<AppEnv>();
 
@@ -44,6 +45,7 @@ app.route('/api/owner', ownerRouter);
 app.route('/api/admin', adminRouter);
 app.route('/api/payments', paymentRouter);
 app.route('/api/notifications', notificationRouter);
+app.route('/api/upload', uploadRouter);
 
 // Global Error Handler
 app.onError((err, c) => {

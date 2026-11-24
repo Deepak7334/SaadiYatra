@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
 import { BIHAR_DISTRICTS } from '@shaadiyatra/shared';
@@ -9,19 +9,17 @@ import {
   XCircle,
   Clock,
   Plus,
-  IndianRupee,
-  ShieldCheck,
   AlertCircle,
   User,
   Phone,
   MapPin,
-  TrendingUp,
-  Sparkles,
-  ChevronRight,
-  Layers,
   BadgeCheck,
   CalendarClock,
   Banknote,
+  Upload,
+  ImagePlus,
+  Trash2,
+  Link as LinkIcon,
 } from 'lucide-react';
 
 export const OwnerDashboard: React.FC = () => {
@@ -56,12 +54,86 @@ export const OwnerDashboard: React.FC = () => {
     description: 'Pristine wedding vehicle with professional chauffeur, AC, and flower mounting readiness.',
     features: ['Air Conditioning', 'Pushback Seats', 'Floral Rails'],
     rules: ['No smoking inside vehicle', 'Toll taxes extra at actuals'],
-    images: ['https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000'],
+    images: [] as string[],
   });
+
+  // Image upload state
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadedPreviews, setUploadedPreviews] = useState<{ url: string; name: string; uploading?: boolean; error?: string }[]>([]);
+  const [urlInput, setUrlInput] = useState('');
+  const [uploadMode, setUploadMode] = useState<'device' | 'url'>('device');
 
   // Calendar block state
   const [selectedVehicleForCal, setSelectedVehicleForCal] = useState<string>('');
   const [blockDate, setBlockDate] = useState<string>(new Date().toISOString().slice(0, 10));
+
+  // ── Image upload helpers ──────────────────────────────────────────────────
+
+  const handleFilesSelected = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+
+    const newFiles = Array.from(files).slice(0, 5 - uploadedPreviews.length); // max 5 total
+
+    // Add optimistic previews first (with local blob URLs)
+    const optimisticPreviews = newFiles.map((f) => ({
+      url: URL.createObjectURL(f),
+      name: f.name,
+      uploading: true,
+    }));
+    setUploadedPreviews((prev) => [...prev, ...optimisticPreviews]);
+
+    // Upload each file to R2 and replace blob URL with server URL
+    for (let i = 0; i < newFiles.length; i++) {
+      const file = newFiles[i];
+      const idx = uploadedPreviews.length + i;
+      try {
+        const res = await api.uploadImage(file);
+        if (res.success && res.url) {
+          setUploadedPreviews((prev) => {
+            const updated = [...prev];
+            updated[idx] = { url: res.url!, name: file.name, uploading: false };
+            return updated;
+          });
+          setNewVehicle((prev) => ({ ...prev, images: [...prev.images, res.url!] }));
+        } else {
+          setUploadedPreviews((prev) => {
+            const updated = [...prev];
+            updated[idx] = { url: optimisticPreviews[i].url, name: file.name, uploading: false, error: res.error || 'Upload failed' };
+            return updated;
+          });
+        }
+      } catch {
+        setUploadedPreviews((prev) => {
+          const updated = [...prev];
+          updated[idx] = { url: optimisticPreviews[i].url, name: file.name, uploading: false, error: 'Upload failed' };
+          return updated;
+        });
+      }
+    }
+  };
+
+  const handleAddUrlImage = () => {
+    const url = urlInput.trim();
+    if (!url) return;
+    setUploadedPreviews((prev) => [...prev, { url, name: 'URL Image' }]);
+    setNewVehicle((prev) => ({ ...prev, images: [...prev.images, url] }));
+    setUrlInput('');
+  };
+
+  const handleRemoveImage = (idx: number) => {
+    setUploadedPreviews((prev) => prev.filter((_, i) => i !== idx));
+    setNewVehicle((prev) => ({ ...prev, images: prev.images.filter((_, i) => i !== idx) }));
+  };
+
+  const resetModal = () => {
+    setShowAddModal(false);
+    setUploadedPreviews([]);
+    setUrlInput('');
+    setUploadMode('device');
+    setNewVehicle((prev) => ({ ...prev, images: [] }));
+  };
+
+  // ─────────────────────────────────────────────────────────────────────────
 
   const fetchData = async () => {
     setLoading(true);
@@ -127,7 +199,7 @@ export const OwnerDashboard: React.FC = () => {
     try {
       const res = await api.createVehicle(newVehicle);
       if (res.success) {
-        setShowAddModal(false);
+        resetModal();
         setSuccessMsg('Vehicle added! It is currently pending admin approval before going live.');
         setTimeout(() => setSuccessMsg(''), 5000);
         fetchData();
@@ -623,7 +695,7 @@ export const OwnerDashboard: React.FC = () => {
                 </div>
               </div>
               <button
-                onClick={() => setShowAddModal(false)}
+                onClick={resetModal}
                 className="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors"
               >
                 ✕
@@ -727,16 +799,142 @@ export const OwnerDashboard: React.FC = () => {
                 </div>
               </div>
 
-              {/* Photo URL */}
+              {/* ── Vehicle Photos ── */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Photo URL</label>
-                <input
-                  type="text"
-                  value={newVehicle.images[0]}
-                  onChange={(e) => setNewVehicle({ ...newVehicle, images: [e.target.value] })}
-                  className="w-full p-3 text-sm font-medium border border-slate-200 rounded-xl focus:ring-2 focus:ring-gold-500 focus:outline-none bg-slate-50"
-                  placeholder="https://…"
-                />
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                  Vehicle Photos <span className="normal-case text-slate-400 font-normal">(up to 5 images)</span>
+                </label>
+
+                {/* Mode Toggle */}
+                <div className="flex gap-1 p-1 bg-slate-100 rounded-xl w-fit mb-3">
+                  <button
+                    type="button"
+                    onClick={() => setUploadMode('device')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                      uploadMode === 'device' ? 'bg-white text-navy-900 shadow-sm' : 'text-slate-500'
+                    }`}
+                  >
+                    <Upload className="w-3 h-3" /> Upload from Device
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setUploadMode('url')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                      uploadMode === 'url' ? 'bg-white text-navy-900 shadow-sm' : 'text-slate-500'
+                    }`}
+                  >
+                    <LinkIcon className="w-3 h-3" /> Paste URL
+                  </button>
+                </div>
+
+                {/* Upload from device */}
+                {uploadMode === 'device' && (
+                  <div>
+                    {/* Hidden file input */}
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/jpeg,image/jpg,image/png,image/webp"
+                      multiple
+                      className="hidden"
+                      onChange={(e) => handleFilesSelected(e.target.files)}
+                    />
+
+                    {/* Drop zone / trigger */}
+                    {uploadedPreviews.length < 5 && (
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="w-full border-2 border-dashed border-slate-200 hover:border-gold-400 rounded-2xl p-6 flex flex-col items-center gap-2 text-slate-400 hover:text-gold-600 transition-all group"
+                      >
+                        <div className="w-12 h-12 rounded-2xl bg-slate-100 group-hover:bg-gold-50 flex items-center justify-center transition-colors">
+                          <ImagePlus className="w-6 h-6" />
+                        </div>
+                        <div className="text-xs font-bold">Click to select photos</div>
+                        <div className="text-[11px] text-slate-400">JPG, PNG, WebP · Max 10 MB each · Up to 5 photos</div>
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {/* Paste URL */}
+                {uploadMode === 'url' && (
+                  <div className="flex gap-2">
+                    <input
+                      type="url"
+                      value={urlInput}
+                      onChange={(e) => setUrlInput(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddUrlImage())}
+                      placeholder="https://example.com/photo.jpg"
+                      className="flex-1 p-3 text-sm font-medium border border-slate-200 rounded-xl focus:ring-2 focus:ring-gold-500 focus:outline-none bg-slate-50"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddUrlImage}
+                      disabled={!urlInput.trim()}
+                      className="px-4 py-2.5 rounded-xl gold-gradient text-navy-900 text-xs font-bold shadow-sm disabled:opacity-40 transition-all"
+                    >
+                      Add
+                    </button>
+                  </div>
+                )}
+
+                {/* Image Previews */}
+                {uploadedPreviews.length > 0 && (
+                  <div className="mt-3 grid grid-cols-3 gap-2">
+                    {uploadedPreviews.map((img, idx) => (
+                      <div key={idx} className="relative group rounded-xl overflow-hidden border border-slate-200 aspect-video bg-slate-100">
+                        <img
+                          src={img.url}
+                          alt={img.name}
+                          className={`w-full h-full object-cover transition-opacity ${img.uploading ? 'opacity-50' : 'opacity-100'}`}
+                        />
+                        {/* Uploading spinner */}
+                        {img.uploading && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-white/60">
+                            <div className="w-5 h-5 border-2 border-gold-500 border-t-transparent rounded-full animate-spin" />
+                          </div>
+                        )}
+                        {/* Upload error */}
+                        {img.error && (
+                          <div className="absolute bottom-0 inset-x-0 bg-rose-600/90 text-white text-[9px] text-center py-0.5 font-bold">
+                            Failed
+                          </div>
+                        )}
+                        {/* First image badge */}
+                        {idx === 0 && !img.uploading && (
+                          <div className="absolute top-1.5 left-1.5 px-1.5 py-0.5 bg-gold-500 text-navy-900 text-[9px] font-bold rounded-full">
+                            Cover
+                          </div>
+                        )}
+                        {/* Remove button */}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveImage(idx)}
+                          className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-rose-600"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+                    {/* Add more button inside grid */}
+                    {uploadedPreviews.length < 5 && uploadMode === 'device' && (
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="aspect-video rounded-xl border-2 border-dashed border-slate-200 hover:border-gold-400 flex items-center justify-center text-slate-300 hover:text-gold-500 transition-colors"
+                      >
+                        <Plus className="w-5 h-5" />
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {uploadedPreviews.length === 0 && (
+                  <p className="mt-2 text-[11px] text-slate-400">
+                    First photo will be used as the cover image shown to customers.
+                  </p>
+                )}
               </div>
             </form>
 
@@ -744,7 +942,7 @@ export const OwnerDashboard: React.FC = () => {
             <div className="p-6 pt-0 flex items-center justify-end gap-3">
               <button
                 type="button"
-                onClick={() => setShowAddModal(false)}
+                onClick={resetModal}
                 className="px-5 py-2.5 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100 transition-colors"
               >
                 Cancel

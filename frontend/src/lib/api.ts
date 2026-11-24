@@ -103,4 +103,17 @@ export const api = {
   getNotifications: () => apiRequest('/notifications'),
   markNotificationRead: (id: string) => apiRequest(`/notifications/${id}/read`, { method: 'PUT' }),
   markAllNotificationsRead: () => apiRequest('/notifications/read-all', { method: 'PUT' }),
+
+  // Image Upload (multipart, skips JSON Content-Type header)
+  uploadImage: async (file: File): Promise<{ success: boolean; url?: string; key?: string; error?: string }> => {
+    const token = localStorage.getItem('shaadiyatra_token');
+    const form = new FormData();
+    form.append('file', file);
+    const res = await fetch('/api/upload/image', {
+      method: 'POST',
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: form,
+    });
+    return res.json();
+  },
 };
