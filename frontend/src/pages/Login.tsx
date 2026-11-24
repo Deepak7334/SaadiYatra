@@ -53,7 +53,7 @@ export const Login: React.FC = () => {
           Sign In to ShaadiYatra
         </h2>
         <p className="mt-2 text-xs text-slate-500">
-          Access your wedding vehicle bookings or manage your fleet dashboard.
+          Access your wedding vehicle bookings or manage your vehicle dashboard.
         </p>
       </div>
 

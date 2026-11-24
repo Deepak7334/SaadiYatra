@@ -63,7 +63,7 @@ export const Home: React.FC = () => {
         <div className="max-w-6xl mx-auto text-center relative z-10">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-navy-800/80 border border-gold-500/30 text-gold-300 text-xs font-semibold mb-6">
             <Sparkles className="w-4 h-4 text-gold-400" />
-            <span>Bihar's #1 Wedding Fleet & Multi-Vehicle Booking Platform</span>
+            <span>Bihar's #1 Wedding Vehicle Booking Platform</span>
           </div>
 
           <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
@@ -152,7 +152,7 @@ export const Home: React.FC = () => {
           <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto pt-6 border-t border-navy-700/50 text-slate-300 text-xs">
             <div className="flex items-center justify-center gap-2">
               <ShieldCheck className="w-4 h-4 text-gold-400" />
-              <span>100% Verified Fleet</span>
+              <span>100% Verified Vehicles</span>
             </div>
             <div className="flex items-center justify-center gap-2">
               <CreditCard className="w-4 h-4 text-gold-400" />
@@ -164,7 +164,7 @@ export const Home: React.FC = () => {
             </div>
             <div className="flex items-center justify-center gap-2">
               <Clock className="w-4 h-4 text-gold-400" />
-              <span>Instant Owner Response</span>
+              <span>Instant Confirmation</span>
             </div>
           </div>
         </div>
@@ -173,7 +173,7 @@ export const Home: React.FC = () => {
       {/* 2. Popular Categories */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <span className="text-xs font-bold uppercase tracking-widest text-gold-600">Curated Wedding Fleet</span>
+          <span className="text-xs font-bold uppercase tracking-widest text-gold-600">Curated Wedding Vehicles</span>
           <h2 className="font-serif text-3xl sm:text-4xl font-bold text-navy-900 mt-2">
             Explore Vehicles by Category
           </h2>
@@ -227,7 +227,7 @@ export const Home: React.FC = () => {
             to="/vehicles"
             className="mt-4 md:mt-0 inline-flex items-center gap-1.5 text-sm font-bold text-navy-900 hover:text-gold-600 transition-colors"
           >
-            <span>View All Fleet ({featuredVehicles.length})</span>
+            <span>View All Vehicles ({featuredVehicles.length})</span>
             <ChevronRight className="w-4 h-4" />
           </Link>
         </div>
@@ -261,12 +261,12 @@ export const Home: React.FC = () => {
             {
               step: '02',
               title: 'Submit 1 Request',
-              desc: 'Submit one combined booking. Every vehicle owner receives notification only for their car.',
+              desc: 'Submit one combined booking request with your dates and event details.',
             },
             {
               step: '03',
-              title: 'Owner & Admin Review',
-              desc: 'Owners confirm availability. Admin verifies and finalizes the package and exact advance amount.',
+              title: 'Instant Availability Check',
+              desc: 'Zero manual wait. Available vehicles are approved instantly so you can lock them right away.',
             },
             {
               step: '04',
@@ -296,7 +296,7 @@ export const Home: React.FC = () => {
           <div className="max-w-2xl">
             <span className="text-xs font-bold uppercase tracking-widest text-gold-400">Join Bihar's Largest Network</span>
             <h3 className="font-serif text-3xl sm:text-4xl font-bold mt-2 text-white">
-              Are you a Vehicle Owner or Fleet Operator in Bihar?
+              Are you a Vehicle Owner or Travel Operator in Bihar?
             </h3>
             <p className="mt-4 text-slate-300 text-sm leading-relaxed">
               Register your luxury cars, Scorpios, Ertigas, travellers, and buses on ShaadiYatra. Get confirmed wedding bookings, manage your calendar with zero double-booking risk, and receive timely direct payouts.
@@ -307,7 +307,7 @@ export const Home: React.FC = () => {
               to="/register-owner"
               className="px-8 py-4 rounded-xl gold-gradient text-navy-900 font-bold text-sm shadow-xl hover:brightness-105 transition-all text-center"
             >
-              Register Your Vehicle Fleet
+              Register Your Vehicles
             </Link>
           </div>
         </div>

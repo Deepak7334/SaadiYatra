@@ -165,7 +165,7 @@ export const BookingDetail: React.FC = () => {
   const steps = [
     { title: 'Booking Created', done: true },
     { title: 'Pay Advance', done: ['confirmed', 'completed'].includes(booking.status) },
-    { title: 'Fleet Confirmed', done: ['confirmed', 'completed'].includes(booking.status) },
+    { title: 'Booking Confirmed', done: ['confirmed', 'completed'].includes(booking.status) },
   ];
 
   return (
@@ -327,7 +327,7 @@ export const BookingDetail: React.FC = () => {
                 <span>Vehicles Available — Pay Advance to Confirm!</span>
               </div>
               <p className="text-xs text-purple-700 mt-1 max-w-lg">
-                Your selected vehicles are ready and reserved for <strong>{booking.eventDate}</strong>. Pay the {booking.advancePercentage}% advance of <strong>₹{booking.advanceAmountRequired?.toLocaleString('en-IN')}</strong> now to lock your fleet. Vehicles will be released if payment is not completed.
+                Your selected vehicles are ready and reserved for <strong>{booking.eventDate}</strong>. Pay the {booking.advancePercentage}% advance of <strong>₹{booking.advanceAmountRequired?.toLocaleString('en-IN')}</strong> now to lock your vehicles. Vehicles will be released if payment is not completed.
               </p>
             </div>
 

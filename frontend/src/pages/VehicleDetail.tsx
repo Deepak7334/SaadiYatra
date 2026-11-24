@@ -67,7 +67,7 @@ export const VehicleDetail: React.FC = () => {
         <h2 className="font-serif text-2xl font-bold text-navy-900 mb-2">Vehicle Not Found</h2>
         <p className="text-sm text-slate-500 mb-6">{error || 'The requested vehicle is currently unavailable.'}</p>
         <Link to="/vehicles" className="px-6 py-2.5 rounded-xl gold-gradient text-navy-900 font-bold text-xs">
-          Return to Fleet Catalog
+          Return to Vehicles Catalog
         </Link>
       </div>
     );

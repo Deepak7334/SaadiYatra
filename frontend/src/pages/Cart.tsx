@@ -130,13 +130,13 @@ export const Cart: React.FC = () => {
           </div>
           <h2 className="font-serif text-3xl font-bold text-navy-900 mb-2">Your Event Cart is Empty</h2>
           <p className="text-sm text-slate-500 max-w-md mx-auto mb-8">
-            Add bride arrival cars, groom Baraat SUVs, and guest buses together to create a unified wedding fleet booking.
+            Add bride arrival cars, groom Baraat SUVs, and guest buses together to create a unified wedding booking.
           </p>
           <Link
             to="/vehicles"
             className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl gold-gradient text-navy-900 font-bold text-sm shadow-md hover:brightness-105 transition-all"
           >
-            <span>Browse Wedding Fleet</span>
+            <span>Browse Wedding Vehicles</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
@@ -150,10 +150,10 @@ export const Cart: React.FC = () => {
       <div className="mb-8">
         <span className="text-xs font-bold uppercase tracking-widest text-gold-600">Multi-Vehicle System</span>
         <h1 className="font-serif text-3xl sm:text-4xl font-extrabold text-navy-900 mt-1">
-          Combined Wedding Fleet Cart ({cart.length} Vehicles)
+          Combined Wedding Cart ({cart.length} Vehicles)
         </h1>
         <p className="mt-2 text-sm text-slate-600">
-          All selected vehicles will be booked together under 1 booking ID. Pay the advance online to instantly confirm your fleet.
+          All selected vehicles will be booked together under 1 booking ID. Pay the advance online to instantly confirm your vehicles.
         </p>
       </div>
 
@@ -418,7 +418,7 @@ export const Cart: React.FC = () => {
                   <span className="inline-block animate-spin rounded-full h-4 w-4 border-2 border-navy-900 border-t-transparent" />
                 ) : (
                   <>
-                    <span>Pay Advance & Confirm Fleet</span>
+                    <span>Pay Advance & Confirm Booking</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}

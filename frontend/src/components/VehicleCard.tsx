@@ -77,7 +77,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle }) => {
         {vehicle.isOwnerVerified && (
           <div className="absolute bottom-3 left-3 flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-950/80 backdrop-blur-md text-emerald-300 text-[11px] font-medium border border-emerald-500/30">
             <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Verified Fleet</span>
+            <span>Verified Vehicle</span>
           </div>
         )}
       </div>

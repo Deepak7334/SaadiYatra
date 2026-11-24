@@ -67,7 +67,7 @@ export const Vehicles: React.FC = () => {
       {/* Header */}
       <div className="mb-8">
         <h1 className="font-serif text-3xl sm:text-4xl font-bold text-navy-900">
-          Wedding Fleet Catalog
+          Wedding Vehicles Catalog
         </h1>
         <p className="mt-2 text-sm text-slate-600">
           Browse and combine multiple vehicles across Bihar for your wedding ceremonies and Baraat.

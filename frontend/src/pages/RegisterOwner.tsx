@@ -86,7 +86,7 @@ export const RegisterOwner: React.FC = () => {
 
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
-                Agency / Fleet Name (Optional)
+                Agency / Business Name (Optional)
               </label>
               <div className="relative">
                 <Building2 className="w-4 h-4 text-slate-400 absolute left-3 top-3.5" />
